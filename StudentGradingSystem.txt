@@ -1,0 +1,133 @@
+import java.util.*;
+import java.io.*;
+
+// Class to represent a student and their grade
+class Student {
+    String name;
+    String id;
+    double marks;
+    String grade;
+
+    Student(String name, String id, double marks) {
+        this.name = name;
+        this.id = id;
+        this.marks = marks;
+        this.grade = assignGrade(marks);
+    }
+
+    // Method to assign grades based on marks
+    private String assignGrade(double marks) {
+        if (marks >= 90) return "A+";
+        else if (marks >= 80) return "A";
+        else if (marks >= 70) return "B";
+        else if (marks >= 60) return "C";
+        else if (marks >= 50) return "D";
+        else return "F";
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ID: %s, Name: %s, Marks: %.2f, Grade: %s", id, name, marks, grade);
+    }
+}
+
+public class StudentGradingSystem {
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final List<Student> students = new ArrayList<>();
+
+    public static void main(String[] args) {
+        boolean running = true;
+        while (running) {
+            showMenu();
+            int choice = getIntegerInput("Choose an option: ");
+
+            switch (choice) {
+                case 1 -> addStudent();
+                case 2 -> viewStudents();
+                case 3 -> saveToFile();
+                case 4 -> running = false;
+                default -> System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    // Display menu options
+    private static void showMenu() {
+        System.out.println("\n--- Student Grading System ---");
+        System.out.println("1. Add Student");
+        System.out.println("2. View All Students");
+        System.out.println("3. Save to File");
+        System.out.println("4. Exit");
+    }
+
+    // Add a student with validation
+    private static void addStudent() {
+        System.out.print("Enter student name: ");
+        String name = scanner.nextLine();
+
+        String id;
+        while (true) {
+            System.out.print("Enter student ID: ");
+            id = scanner.nextLine();
+            if (!id.isEmpty()) break;
+            System.out.println("ID cannot be empty.");
+        }
+
+        double marks = getDoubleInput("Enter marks (0-100): ");
+        if (marks < 0 || marks > 100) {
+            System.out.println("Marks should be between 0 and 100.");
+            return;
+        }
+
+        students.add(new Student(name, id, marks));
+        System.out.println("Student added successfully.");
+    }
+
+    // Display all student records
+    private static void viewStudents() {
+        if (students.isEmpty()) {
+            System.out.println("No students found.");
+            return;
+        }
+        System.out.println("\n--- Student Records ---");
+        for (Student s : students) {
+            System.out.println(s);
+        }
+    }
+
+    // Save student records to a file
+    private static void saveToFile() {
+        try (PrintWriter writer = new PrintWriter("student_records.txt")) {
+            for (Student s : students) {
+                writer.println(s);
+            }
+            System.out.println("Data saved to student_records.txt");
+        } catch (IOException e) {
+            System.out.println("Error saving to file: " + e.getMessage());
+        }
+    }
+
+    // Utility to get integer input with validation
+    private static int getIntegerInput(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            try {
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Enter a valid integer.");
+            }
+        }
+    }
+
+    // Utility to get double input with validation
+    private static double getDoubleInput(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            try {
+                return Double.parseDouble(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Enter valid marks (number).");
+            }
+        }
+    }
+}
